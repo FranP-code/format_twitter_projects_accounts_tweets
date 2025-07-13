@@ -50,17 +50,17 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="flex items-center space-x-3 min-w-[200px]">
+        <div className="flex items-center space-x-3 w-full">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
             {row.original.author_name.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-medium truncate">{row.original.author_name}</div>
-            <div className="text-sm text-muted-foreground truncate">@{row.original.author_screen_name}</div>
+            <div className="font-medium text-sm truncate">{row.original.author_name}</div>
+            <div className="text-xs text-muted-foreground truncate">@{row.original.author_screen_name}</div>
           </div>
         </div>
       ),
-      size: 200,
+      size: 240,
     }),
     columnHelper.accessor('project_description', {
       header: ({ column }) => (
@@ -80,17 +80,17 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="min-w-[300px] max-w-[400px]">
-          <p className="text-sm leading-relaxed line-clamp-3">{row.original.project_description}</p>
+        <div className="w-full">
+          <p className="text-sm leading-relaxed line-clamp-3 pr-2">{row.original.project_description}</p>
         </div>
       ),
-      size: 350,
+      size: 400,
     }),
     ...(showUrlColumn ? [
       columnHelper.accessor('project_url', {
         header: 'Project',
         cell: ({ row }) => (
-          <div className="min-w-[100px]">
+          <div className="w-full flex justify-center">
             {row.original.project_url ? (
               <a
                 href={row.original.project_url}
@@ -112,7 +112,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
     columnHelper.accessor('media_thumbnail', {
       header: 'Media',
       cell: ({ row }) => (
-        <div className="min-w-[80px] flex justify-center">
+        <div className="w-full flex justify-center">
           {row.original.media_thumbnail ? (
             <img
               src={row.original.media_thumbnail}
@@ -122,12 +122,12 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
             />
           ) : (
             <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">No media</span>
+              <span className="text-xs text-muted-foreground text-center">No media</span>
             </div>
           )}
         </div>
       ),
-      size: 80,
+      size: 100,
     }),
     columnHelper.accessor('created_at', {
       header: ({ column }) => (
@@ -147,18 +147,18 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="text-sm min-w-[120px]">
+        <div className="text-sm w-full">
           {formatDistanceToNow(new Date(row.original.created_at), { addSuffix: true })}
         </div>
       ),
-      size: 120,
+      size: 140,
     }),
     columnHelper.accessor('favorite_count', {
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-auto p-0 font-semibold hover:bg-transparent justify-start w-full"
+          className="h-auto p-0 font-semibold hover:bg-transparent justify-center w-full"
         >
           Likes
           {column.getIsSorted() === 'asc' ? (
@@ -171,11 +171,11 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="text-sm font-medium min-w-[80px] text-right">
+        <div className="text-sm font-medium w-full text-center">
           {row.original.favorite_count.toLocaleString()}
         </div>
       ),
-      size: 80,
+      size: 100,
     }),
     columnHelper.accessor('category', {
       header: ({ column }) => (
@@ -195,13 +195,13 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         </Button>
       ),
       cell: ({ row }) => (
-        <div className="min-w-[120px]">
+        <div className="w-full">
           <span className="inline-block px-2 py-1 text-xs font-medium bg-secondary text-secondary-foreground rounded-full">
             {row.original.category}
           </span>
         </div>
       ),
-      size: 120,
+      size: 140,
     }),
   ], [showUrlColumn]);
 
@@ -226,7 +226,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 80,
+    estimateSize: () => 88,
     overscan: 5,
   });
 
@@ -234,6 +234,9 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
     const cats = Array.from(new Set(projects.map(p => p.category || 'Uncategorized')));
     return cats.sort();
   }, [projects]);
+
+  // Calculate total width
+  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 1000;
 
   return (
     <div className="space-y-4">
@@ -272,18 +275,17 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         </div>
       </div>
 
-      {/* Table */}
-      <div className="border rounded-lg overflow-hidden">
-        <div className="w-full">
-          {/* Header */}
-          <div className="bg-muted/50 border-b">
+      {/* Table Container */}
+      <div className="border rounded-lg overflow-hidden bg-card">
+        <div className="w-full" style={{ minWidth: `${totalWidth}px` }}>
+          {/* Fixed Header */}
+          <div className="sticky top-0 z-10 bg-muted/50 border-b">
             {table.getHeaderGroups().map((headerGroup) => (
-              <div key={headerGroup.id} className="flex">
+              <div key={headerGroup.id} className="grid" style={{ gridTemplateColumns: headerGroup.headers.map(h => `${h.getSize()}px`).join(' ') }}>
                 {headerGroup.headers.map((header) => (
                   <div 
                     key={header.id} 
-                    className="px-4 py-3 text-left font-medium border-r border-border last:border-r-0"
-                    style={{ width: `${header.getSize()}px` }}
+                    className="px-4 py-3 text-left font-medium border-r border-border last:border-r-0 flex items-center"
                   >
                     {header.isPlaceholder
                       ? null
@@ -297,25 +299,25 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
           {/* Virtual Scrollable Body */}
           <div 
             ref={parentRef}
-            className="h-[600px] overflow-auto"
+            className="h-[600px] overflow-auto relative"
           >
-            <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
+            <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
               {virtualizer.getVirtualItems().map((virtualRow) => {
                 const row = rows[virtualRow.index];
                 return (
                   <div
                     key={row.id}
-                    className="absolute w-full flex border-b border-border hover:bg-muted/50 transition-colors"
+                    className="absolute w-full border-b border-border hover:bg-muted/50 transition-colors grid"
                     style={{
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
+                      gridTemplateColumns: row.getVisibleCells().map(cell => `${cell.column.getSize()}px`).join(' ')
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <div
                         key={cell.id}
-                        className="px-4 py-3 border-r border-border last:border-r-0 flex items-center"
-                        style={{ width: `${cell.column.getSize()}px` }}
+                        className="px-4 py-3 border-r border-border last:border-r-0 flex items-center overflow-hidden"
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </div>
