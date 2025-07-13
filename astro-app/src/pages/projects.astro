@@ -24,7 +24,7 @@ const projects = await loadTwitterProjects();
     </script>
   </head>
   <body>
-    <ProjectsView client:load projects={projects} />
+    <ProjectsView client:only projects={projects} />
   </body>
 </html>
 </html>
