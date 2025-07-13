@@ -7,6 +7,7 @@ export interface TwitterProject {
   created_at: string;
   project_description: string;
   project_url: string | null;
+  original_tweet_url: string | null;
   media_type: string | null;
   media_thumbnail: string | null;
   media_original: string | null;

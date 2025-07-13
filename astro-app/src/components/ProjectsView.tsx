@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ProjectsTable } from './ProjectsTable';
 import { ProjectCard } from './ProjectCard';
 import { ThemeToggle } from './ThemeToggle';
-import { LayoutGrid, Table } from 'lucide-react';
+import { LayoutGrid, Table, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import type { TwitterProject } from '@/lib/csv-loader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { getSeenProjects, clearAllSeenProjects } from '@/lib/seen-projects';
 
 interface ProjectsViewProps {
   projects: TwitterProject[];
@@ -13,12 +14,30 @@ interface ProjectsViewProps {
 
 export function ProjectsView({ projects }: ProjectsViewProps) {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  const [seenProjectIds, setSeenProjectIds] = useState<Set<string>>(new Set());
 
-  // Separate projects with and without URLs
-  const projectsWithUrls = projects.filter(p => p.project_url);
-  const projectsWithoutUrls = projects.filter(p => !p.project_url);
+  // Update seen projects state
+  const updateSeenProjects = useCallback(() => {
+    setSeenProjectIds(getSeenProjects());
+  }, []);
 
-  console.log(projects);
+  useEffect(() => {
+    updateSeenProjects();
+  }, [updateSeenProjects]);
+
+  // Separate projects by URL and seen status
+  const unseenProjects = projects.filter(p => !seenProjectIds.has(p.id));
+  const seenProjects = projects.filter(p => seenProjectIds.has(p.id));
+  
+  const unseenWithUrls = unseenProjects.filter(p => p.project_url);
+  const unseenWithoutUrls = unseenProjects.filter(p => !p.project_url);
+  const seenWithUrls = seenProjects.filter(p => p.project_url);
+  const seenWithoutUrls = seenProjects.filter(p => !p.project_url);
+
+  const handleClearSeenProjects = () => {
+    clearAllSeenProjects();
+    updateSeenProjects();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,64 +69,125 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
                 <LayoutGrid className="w-4 h-4" />
               </Button>
             </div>
+            {seenProjects.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearSeenProjects}
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clear Seen ({seenProjects.length})
+              </Button>
+            )}
             <ThemeToggle />
           </div>
         </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
           <div className="bg-card rounded-lg border p-6">
             <div className="text-2xl font-bold text-foreground">{projects.length}</div>
             <div className="text-muted-foreground">Total Projects</div>
           </div>
           <div className="bg-card rounded-lg border p-6">
-            <div className="text-2xl font-bold text-green-600">{projectsWithUrls.length}</div>
-            <div className="text-muted-foreground">With Project URLs</div>
+            <div className="text-2xl font-bold text-blue-600">{unseenProjects.length}</div>
+            <div className="text-muted-foreground">Unseen Projects</div>
           </div>
           <div className="bg-card rounded-lg border p-6">
-            <div className="text-2xl font-bold text-orange-600">{projectsWithoutUrls.length}</div>
-            <div className="text-muted-foreground">Missing URLs</div>
+            <div className="text-2xl font-bold text-green-600">{seenProjects.length}</div>
+            <div className="text-muted-foreground">Seen Projects</div>
+          </div>
+          <div className="bg-card rounded-lg border p-6">
+            <div className="text-2xl font-bold text-purple-600">{projects.filter(p => p.project_url).length}</div>
+            <div className="text-muted-foreground">With URLs</div>
+          </div>
+          <div className="bg-card rounded-lg border p-6">
+            <div className="text-2xl font-bold text-orange-600">{projects.filter(p => !p.project_url).length}</div>
+            <div className="text-muted-foreground">No URLs</div>
           </div>
         </div>
 
         {/* Content */}
-        <Tabs defaultValue="with-urls" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="unseen-with-urls" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="with-urls">
-              Projects with URLs ({projectsWithUrls.length})
+              Unseen w/ URLs ({unseenWithUrls.length})
             </TabsTrigger>
             <TabsTrigger value="without-urls">
-              Missing URLs ({projectsWithoutUrls.length})
+              Unseen w/o URLs ({unseenWithoutUrls.length})
+            </TabsTrigger>
+            <TabsTrigger value="seen-with-urls">
+              Seen w/ URLs ({seenWithUrls.length})
+            </TabsTrigger>
+            <TabsTrigger value="seen-without-urls">
+              Seen w/o URLs ({seenWithoutUrls.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="with-urls" className="space-y-6">
+          <TabsContent value="unseen-with-urls" className="space-y-6">
             {viewMode === 'table' ? (
               <ProjectsTable
-                projects={projectsWithUrls}
-                title="Projects with URLs"
+                projects={unseenWithUrls}
+                title="Unseen Projects with URLs"
                 showUrlColumn={true}
+                onSeenStatusChange={updateSeenProjects}
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projectsWithUrls.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
+                {unseenWithUrls.map((project) => (
+                  <ProjectCard key={project.id} project={project} onSeenStatusChange={updateSeenProjects} />
                 ))}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="without-urls" className="space-y-6">
+          <TabsContent value="unseen-without-urls" className="space-y-6">
             {viewMode === 'table' ? (
               <ProjectsTable
-                projects={projectsWithoutUrls}
-                title="Projects without URLs"
+                projects={unseenWithoutUrls}
+                title="Unseen Projects without URLs"
                 showUrlColumn={false}
+                onSeenStatusChange={updateSeenProjects}
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projectsWithoutUrls.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
+                {unseenWithoutUrls.map((project) => (
+                  <ProjectCard key={project.id} project={project} onSeenStatusChange={updateSeenProjects} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="seen-with-urls" className="space-y-6">
+            {viewMode === 'table' ? (
+              <ProjectsTable
+                projects={seenWithUrls}
+                title="Seen Projects with URLs"
+                showUrlColumn={true}
+                onSeenStatusChange={updateSeenProjects}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {seenWithUrls.map((project) => (
+                  <ProjectCard key={project.id} project={project} onSeenStatusChange={updateSeenProjects} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="seen-without-urls" className="space-y-6">
+            {viewMode === 'table' ? (
+              <ProjectsTable
+                projects={seenWithoutUrls}
+                title="Seen Projects without URLs"
+                showUrlColumn={false}
+                onSeenStatusChange={updateSeenProjects}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {seenWithoutUrls.map((project) => (
+                  <ProjectCard key={project.id} project={project} onSeenStatusChange={updateSeenProjects} />
                 ))}
               </div>
             )}

@@ -10,26 +10,63 @@ import {
   type SortingState,
   type ColumnFiltersState
 } from '@tanstack/react-table';
-import { ArrowUpDown, ArrowUp, ArrowDown, Search, ExternalLink } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Search, ExternalLink, Twitter, Check, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useState, useEffect } from 'react';
 import type { TwitterProject } from '@/lib/csv-loader';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select } from './ui/select';
+import { markProjectAsSeen, markProjectAsUnseen, isProjectSeen } from '@/lib/seen-projects';
 
 interface ProjectsTableProps {
   projects: TwitterProject[];
   title: string;
   showUrlColumn?: boolean;
+  onSeenStatusChange?: () => void;
 }
 
 const columnHelper = createColumnHelper<TwitterProject>();
 
-export function ProjectsTable({ projects, title, showUrlColumn = true }: ProjectsTableProps) {
+export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenStatusChange }: ProjectsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [seenProjects, setSeenProjects] = useState<Set<string>>(new Set());
   const parentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Update seen projects state when component mounts or projects change
+    const updateSeenState = () => {
+      const seen = new Set<string>();
+      projects.forEach(project => {
+        if (isProjectSeen(project.id)) {
+          seen.add(project.id);
+        }
+      });
+      setSeenProjects(seen);
+    };
+    
+    updateSeenState();
+  }, [projects]);
+
+  const toggleSeen = (projectId: string) => {
+    const isCurrentlySeen = seenProjects.has(projectId);
+    
+    if (isCurrentlySeen) {
+      markProjectAsUnseen(projectId);
+      setSeenProjects(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(projectId);
+        return newSet;
+      });
+    } else {
+      markProjectAsSeen(projectId);
+      setSeenProjects(prev => new Set(prev).add(projectId));
+    }
+    
+    onSeenStatusChange?.();
+  };
 
   const columns = useMemo(() => [
     columnHelper.accessor('author_name', {
@@ -109,6 +146,27 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
         size: 100,
       })
     ] : []),
+    columnHelper.accessor('original_tweet_url', {
+      header: 'Tweet',
+      cell: ({ row }) => (
+        <div className="w-full flex justify-center">
+          {row.original.original_tweet_url ? (
+            <a
+              href={row.original.original_tweet_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-1 text-blue-500 hover:text-blue-400 transition-colors"
+            >
+              <Twitter className="w-4 h-4" />
+              <span className="text-sm">Tweet</span>
+            </a>
+          ) : (
+            <span className="text-muted-foreground text-sm">No Tweet</span>
+          )}
+        </div>
+      ),
+      size: 100,
+    }),
     columnHelper.accessor('media_thumbnail', {
       header: 'Media',
       cell: ({ row }) => (
@@ -203,7 +261,39 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
       ),
       size: 140,
     }),
-  ], [showUrlColumn]);
+    columnHelper.display({
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        const projectId = row.original.id;
+        const isSeen = seenProjects.has(projectId);
+        
+        return (
+          <div className="w-full flex justify-center">
+            <Button
+              variant={isSeen ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => toggleSeen(projectId)}
+              className="h-8"
+            >
+              {isSeen ? (
+                <>
+                  <X className="w-3 h-3 mr-1" />
+                  Unseen
+                </>
+              ) : (
+                <>
+                  <Check className="w-3 h-3 mr-1" />
+                  Seen
+                </>
+              )}
+            </Button>
+          </div>
+        );
+      },
+      size: 120,
+    }),
+  ], [showUrlColumn, seenProjects]);
 
   const table = useReactTable({
     data: projects,
@@ -307,7 +397,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true }: Project
                 return (
                   <div
                     key={row.id}
-                    className="absolute w-full border-b border-border hover:bg-muted/50 transition-colors grid"
+                    className={`absolute w-full border-b border-border hover:bg-muted/50 transition-colors grid ${seenProjects.has(row.original.id) ? 'opacity-60 bg-muted/30' : ''}`}
                     style={{
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
