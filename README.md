@@ -1,0 +1,1 @@
+python3 -m venv prod && . prod/bin/activate
