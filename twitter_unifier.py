@@ -56,6 +56,36 @@ def extract_project_url_from_card(metadata_str):
     return None
 
 
+def extract_best_url_from_metadata(metadata_str):
+    """Extract the best possible URL from the metadata field of the original tweet."""
+    if not metadata_str or metadata_str == 'null':
+        return None
+    try:
+        metadata = json.loads(metadata_str)
+        # Try entities.urls[0].expanded_url
+        legacy = metadata.get('legacy', {})
+        entities = legacy.get('entities', {})
+        urls = entities.get('urls', [])
+        if urls and 'expanded_url' in urls[0]:
+            return urls[0]['expanded_url']
+        # Fallback: entities.urls[0].url
+        if urls and 'url' in urls[0]:
+            return urls[0]['url']
+        # Fallback: legacy.url
+        if 'url' in legacy:
+            return legacy['url']
+        # Fallback: core.user_results.result.legacy.url
+        core = metadata.get('core', {})
+        user_results = core.get('user_results', {})
+        result = user_results.get('result', {})
+        user_legacy = result.get('legacy', {})
+        if 'url' in user_legacy:
+            return user_legacy['url']
+    except Exception:
+        pass
+    return None
+
+
 def process_twitter_dump(input_file, output_file):
     """Process Twitter dump and create unified project CSV"""
     
@@ -88,6 +118,9 @@ def process_twitter_dump(input_file, output_file):
         
         description = re.sub(r'https://t\.co/\w+', '', original_tweet['full_text']).strip()
         media_type, media_thumbnail, media_original = extract_media_info(original_tweet['media'])
+
+        # Extract original tweet URL from metadata
+        original_tweet_url = extract_best_url_from_metadata(original_tweet.get('metadata'))
         
         # Look for corresponding reply tweet. Comparison is now string vs string.
         reply_tweet = reply_tweets[reply_tweets['in_reply_to'] == tweet_id]
@@ -119,7 +152,8 @@ def process_twitter_dump(input_file, output_file):
             'favorite_count': original_tweet['favorite_count'],
             'retweet_count': original_tweet['retweet_count'],
             'reply_count': original_tweet['reply_count'],
-            'views_count': original_tweet['views_count']
+            'views_count': original_tweet['views_count'],
+            'original_tweet_url': original_tweet_url  # <-- new field
         }
         
         unified_projects.append(project_entry)
