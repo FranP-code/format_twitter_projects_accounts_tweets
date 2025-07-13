@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ProjectsTable } from './ProjectsTable';
 import { ProjectCard } from './ProjectCard';
 import { ThemeToggle } from './ThemeToggle';
 import { LayoutGrid, Table } from 'lucide-react';
 import { Button } from './ui/button';
 import type { TwitterProject } from '@/lib/csv-loader';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 interface ProjectsViewProps {
   projects: TwitterProject[];
@@ -17,6 +17,8 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
   // Separate projects with and without URLs
   const projectsWithUrls = projects.filter(p => p.project_url);
   const projectsWithoutUrls = projects.filter(p => !p.project_url);
+
+  console.log(projects);
 
   return (
     <div className="min-h-screen bg-background">
