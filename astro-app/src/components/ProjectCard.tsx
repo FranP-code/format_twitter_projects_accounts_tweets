@@ -66,7 +66,7 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
 
       {/* Project Actions */}
       <div className="flex items-center justify-between">
-        <>
+        <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-4">
             {/* Project URL */}
             {project.project_url && (
@@ -95,26 +95,24 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
             )}
           </div>
         
-          {/* Seen Toggle */}
-          <Button
-            variant={seen ? "secondary" : "outline"}
-            size="sm"
-            onClick={toggleSeen}
-            className="ml-auto"
+        </div>
+        
+        {/* Seen Checkbox */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id={`seen-${project.id}`}
+            className="w-4 h-4 rounded border-border bg-background"
+            checked={seen}
+            onChange={toggleSeen}
+          />
+          <label 
+            htmlFor={`seen-${project.id}`}
+            className="text-sm text-muted-foreground cursor-pointer"
           >
-            {seen ? (
-              <>
-                <X className="w-4 h-4 mr-1" />
-                Mark Unseen
-              </>
-            ) : (
-              <>
-                <Check className="w-4 h-4 mr-1" />
-                Mark Seen
-              </>
-            )}
-          </Button>
-        </>
+            Seen
+          </label>
+        </div>
       </div>
 
       {/* Engagement Stats */}
