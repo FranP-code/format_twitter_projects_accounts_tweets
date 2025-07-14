@@ -26,7 +26,22 @@ export async function loadTwitterProjects(): Promise<TwitterProject[]> {
     const csvContent = fs.readFileSync(csvPath, 'utf-8');
     
     const records = parse(csvContent, {
-      columns: true,
+      columns: [
+        'id',
+        'created_at', 
+        'project_description',
+        'project_url',
+        'media_type',
+        'media_thumbnail',
+        'media_original',
+        'author_screen_name',
+        'author_name',
+        'favorite_count',
+        'retweet_count',
+        'reply_count',
+        'views_count',
+        'original_tweet_url'
+      ],
       skip_empty_lines: true,
       cast: (value, context) => {
         // Convert numeric fields
