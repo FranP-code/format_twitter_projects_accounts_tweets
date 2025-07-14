@@ -252,9 +252,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
         </div>
       ),
       size: 80,
-    }),
-      size: 120,
-    }),
+    })
   ], [showUrlColumn, seenProjects]);
 
   const table = useReactTable({
