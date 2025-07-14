@@ -76,7 +76,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
         const isSeen = seenProjects.has(projectId);
         
         return (
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center">
             <input
               type="checkbox"
               className="w-4 h-4 rounded border-border bg-background"
@@ -186,22 +186,22 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
     columnHelper.accessor('media_thumbnail', {
       header: 'Media',
       cell: ({ row }) => (
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center items-center">
           {row.original.media_thumbnail ? (
             <img
               src={row.original.media_thumbnail}
               alt="Project preview"
-              className="w-16 h-16 object-cover rounded-lg"
+              className="w-20 h-20 object-cover rounded-lg"
               loading="lazy"
             />
           ) : (
-            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+            <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center">
               <span className="text-xs text-muted-foreground text-center">No media</span>
             </div>
           )}
         </div>
       ),
-      size: 90,
+      size: 130,
     }),
     columnHelper.accessor('created_at', {
       header: ({ column }) => (
@@ -228,30 +228,6 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
         </div>
       ),
       size: 120,
-    }),
-    columnHelper.accessor('favorite_count', {
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-auto p-0 font-semibold hover:bg-transparent justify-center w-full"
-        >
-          Likes
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          )}
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div className="text-sm font-medium w-full text-center">
-          {row.original.favorite_count.toLocaleString()}
-        </div>
-      ),
-      size: 80,
     })
   ], [showUrlColumn, seenProjects]);
 
@@ -286,7 +262,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
   }, [projects]);
 
   // Calculate total width
-  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 880;
+  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 850;
 
   return (
     <div className="space-y-4">
