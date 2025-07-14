@@ -420,7 +420,6 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         </div>
       </div>
-      </div>
     </div>
   );
 }
