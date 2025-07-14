@@ -70,17 +70,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
   const columns = useMemo(() => [
     columnHelper.display({
       id: 'seen',
-      header: ({ table }) => (
-        <div className="flex justify-center">
-          <input
-            type="checkbox"
-            className="w-4 h-4 rounded border-border bg-background"
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-          />
-        </div>
-      ),
+      header: "Seen?",
       cell: ({ row }) => {
         const projectId = row.original.id;
         const isSeen = seenProjects.has(projectId);
@@ -96,7 +86,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         );
       },
-      size: 60,
+      size: 50,
     }),
     columnHelper.accessor('author_name', {
       header: ({ column }) => (
@@ -126,7 +116,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         </div>
       ),
-      size: 200,
+      size: 160,
     }),
     columnHelper.accessor('project_description', {
       header: ({ column }) => (
@@ -150,7 +140,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           <p className="text-sm leading-relaxed line-clamp-3 pr-2">{row.original.project_description}</p>
         </div>
       ),
-      size: 350,
+      size: 280,
     }),
     ...(showUrlColumn ? [
       columnHelper.accessor('project_url', {
@@ -264,7 +254,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           {row.original.favorite_count.toLocaleString()}
         </div>
       ),
-      size: 100,
+      size: 80,
     }),
     columnHelper.accessor('category', {
       header: ({ column }) => (
@@ -290,7 +280,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </span>
         </div>
       ),
-      size: 140,
+      size: 100,
     }),
   ], [showUrlColumn, seenProjects]);
 
@@ -325,7 +315,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
   }, [projects]);
 
   // Calculate total width
-  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 800;
+  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 700;
 
   return (
     <div className="space-y-4">
@@ -365,9 +355,8 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
       </div>
 
       {/* Table Container */}
-      <div className="border rounded-lg bg-card">
-        <div className="overflow-x-auto">
-          <div className="w-full" style={{ minWidth: `${totalWidth}px` }}>
+      <div className="border rounded-lg bg-card overflow-hidden">
+        <div className="w-full">
           {/* Fixed Header */}
             <div className="sticky top-0 z-10 bg-muted/50 border-b">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -417,8 +406,6 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
                 })}
             </div>
             </div>
-          </div>
-        </div>
       </div>
     </div>
   );
