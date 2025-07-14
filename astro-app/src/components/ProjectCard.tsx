@@ -64,53 +64,55 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
 
       {/* Project Actions */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {/* Project URL */}
-          {project.project_url && (
-            <a
-              href={project.project_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span className="text-sm font-medium">View Project</span>
-            </a>
-          )}
-          
-          {/* Tweet URL */}
-          {project.original_tweet_url && (
-            <a
-              href={project.original_tweet_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 text-blue-500 hover:text-blue-400 transition-colors"
-            >
-              <Twitter className="w-4 h-4" />
-              <span className="text-sm font-medium">View Tweet</span>
-            </a>
-          )}
-        </div>
+        <>
+          <div className="flex items-center space-x-4">
+            {/* Project URL */}
+            {project.project_url && (
+              <a
+                href={project.project_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span className="text-sm font-medium">View Project</span>
+              </a>
+            )}
+            
+            {/* Tweet URL */}
+            {project.original_tweet_url && (
+              <a
+                href={project.original_tweet_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-2 text-blue-500 hover:text-blue-400 transition-colors"
+              >
+                <Twitter className="w-4 h-4" />
+                <span className="text-sm font-medium">View Tweet</span>
+              </a>
+            )}
+          </div>
         
-        {/* Seen Toggle */}
-        <Button
-          variant={seen ? "secondary" : "outline"}
-          size="sm"
-          onClick={toggleSeen}
-          className="ml-auto"
-        >
-          {seen ? (
-            <>
-              <X className="w-4 h-4 mr-1" />
-              Mark Unseen
-            </>
-          ) : (
-            <>
-              <Check className="w-4 h-4 mr-1" />
-              Mark Seen
-            </>
-          )}
-        </Button>
+          {/* Seen Toggle */}
+          <Button
+            variant={seen ? "secondary" : "outline"}
+            size="sm"
+            onClick={toggleSeen}
+            className="ml-auto"
+          >
+            {seen ? (
+              <>
+                <X className="w-4 h-4 mr-1" />
+                Mark Unseen
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4 mr-1" />
+                Mark Seen
+              </>
+            )}
+          </Button>
+        </>
       </div>
 
       {/* Engagement Stats */}

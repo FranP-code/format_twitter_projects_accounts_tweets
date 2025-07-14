@@ -12,7 +12,6 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, ExternalLink, Twitter, Check, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { useState, useEffect } from 'react';
 import type { TwitterProject } from '@/lib/csv-loader';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
