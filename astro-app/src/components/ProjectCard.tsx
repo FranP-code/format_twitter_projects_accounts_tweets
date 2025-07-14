@@ -36,7 +36,7 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
       {/* Author Info */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
           {project.author_name.charAt(0).toUpperCase()}
         </div>
         <div>
@@ -44,26 +44,8 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
           <p className="text-sm text-muted-foreground">@{project.author_screen_name}</p>
         </div>
         </div>
-        <div className="flex items-center space-x-2">
         <div className="ml-auto text-xs text-muted-foreground">
           {formattedDate}
-        </div>
-          {/* Seen Checkbox */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id={`seen-${project.id}`}
-              className="w-4 h-4 rounded border-border bg-background"
-              checked={seen}
-              onChange={toggleSeen}
-            />
-            <label 
-              htmlFor={`seen-${project.id}`}
-              className="text-sm text-muted-foreground cursor-pointer"
-            >
-              Seen
-            </label>
-          </div>
         </div>
       </div>
 
@@ -81,7 +63,25 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
 
       {/* Project Description */}
       <div>
-        <p className="text-foreground leading-relaxed">{project.project_description}</p>
+        <div className="flex items-start justify-between gap-4">
+          <p className="text-foreground leading-relaxed flex-1">{project.project_description}</p>
+          {/* Seen Checkbox - moved here */}
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            <input
+              type="checkbox"
+              id={`seen-${project.id}`}
+              className="w-4 h-4 rounded border-border bg-background"
+              checked={seen}
+              onChange={toggleSeen}
+            />
+            <label 
+              htmlFor={`seen-${project.id}`}
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              Seen
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* Project Actions */}

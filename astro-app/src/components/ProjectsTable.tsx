@@ -116,7 +116,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         </div>
       ),
-      size: 180,
+      size: 160,
     }),
     columnHelper.accessor('project_description', {
       header: ({ column }) => (
@@ -140,7 +140,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           <p className="text-sm leading-relaxed line-clamp-3 pr-2">{row.original.project_description}</p>
         </div>
       ),
-      size: 300,
+      size: 280,
     }),
     columnHelper.display({
       id: 'links',
@@ -181,7 +181,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         </div>
       ),
-      size: 90,
+      size: 80,
     }),
     columnHelper.accessor('media_thumbnail', {
       header: 'Media',
@@ -201,7 +201,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           )}
         </div>
       ),
-      size: 130,
+      size: 100,
     }),
     columnHelper.accessor('created_at', {
       header: ({ column }) => (
@@ -227,7 +227,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
             : 'N/A'}
         </div>
       ),
-      size: 120,
+      size: 100,
     }),
     columnHelper.accessor('category', {
       header: ({ column }) => (
@@ -253,7 +253,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </span>
         </div>
       ),
-      size: 120,
+      size: 100,
     })
   ], [showUrlColumn, seenProjects]);
 
@@ -288,7 +288,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
   }, [projects]);
 
   // Calculate total width
-  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 850;
+  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 800;
 
   return (
     <div className="space-y-4">
@@ -329,9 +329,9 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
 
       {/* Table Container */}
       <div className="border rounded-lg bg-card overflow-hidden">
-        <div className="w-full overflow-x-auto">
+        <div className="w-full">
           {/* Fixed Header */}
-          <div className="sticky top-0 z-10 bg-muted/50 border-b" style={{ minWidth: `${totalWidth}px` }}>
+          <div className="sticky top-0 z-10 bg-muted/50 border-b">
             {table.getHeaderGroups().map((headerGroup) => (
                 <div key={headerGroup.id} className="grid" style={{ gridTemplateColumns: headerGroup.headers.map(h => `${h.getSize()}px`).join(' ') }}>
                 {headerGroup.headers.map((header) => (
@@ -352,7 +352,6 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
             <div 
             ref={parentRef}
             className="h-[600px] overflow-auto relative"
-            style={{ minWidth: `${totalWidth}px` }}
             >
             <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                 {virtualizer.getVirtualItems().map((virtualRow) => {
