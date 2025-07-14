@@ -1,0 +1,30 @@
+---
+import { loadTwitterProjects } from '../lib/csv-loader';
+import { ProjectsView } from '../components/ProjectsView';
+import '../styles/global.css';
+
+// Load projects server-side
+const projects = await loadTwitterProjects();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Twitter Projects Viewer</title>
+    <meta name="description" content="Explore amazing projects shared on Twitter with advanced filtering and sorting capabilities." />
+    <script>
+      // Initialize theme before content loads to prevent flash
+      const savedTheme = localStorage.getItem('theme');
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const theme = savedTheme || systemTheme;
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    </script>
+  </head>
+  <body>
+    <ProjectsView client:only projects={projects} />
+  </body>
+</html>
+</html>
