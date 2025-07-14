@@ -70,7 +70,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
   const columns = useMemo(() => [
     columnHelper.display({
       id: 'seen',
-      header: "Seen?",
+      header: "Seen",
       cell: ({ row }) => {
         const projectId = row.original.id;
         const isSeen = seenProjects.has(projectId);
@@ -86,7 +86,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         );
       },
-      size: 50,
+      size: 80,
     }),
     columnHelper.accessor('author_name', {
       header: ({ column }) => (
@@ -116,7 +116,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           </div>
         </div>
       ),
-      size: 160,
+      size: 180,
     }),
     columnHelper.accessor('project_description', {
       header: ({ column }) => (
@@ -140,51 +140,48 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           <p className="text-sm leading-relaxed line-clamp-3 pr-2">{row.original.project_description}</p>
         </div>
       ),
-      size: 280,
+      size: 300,
     }),
-    ...(showUrlColumn ? [
-      columnHelper.accessor('project_url', {
-        header: 'Project',
-        cell: ({ row }) => (
-          <div className="w-full flex justify-center">
-            {row.original.project_url ? (
+    columnHelper.display({
+      id: 'links',
+      header: 'Links',
+      cell: ({ row }) => (
+        <div className="w-full flex flex-col space-y-1">
+          {showUrlColumn && (
+            <div className="flex justify-center">
+              {row.original.project_url ? (
+                <a
+                  href={row.original.project_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1 text-primary hover:text-primary/80 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span className="text-xs">Project</span>
+                </a>
+              ) : (
+                <span className="text-muted-foreground text-xs">No URL</span>
+              )}
+            </div>
+          )}
+          <div className="flex justify-center">
+            {row.original.original_tweet_url ? (
               <a
-                href={row.original.project_url}
+                href={row.original.original_tweet_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1 text-primary hover:text-primary/80 transition-colors"
+                className="inline-flex items-center space-x-1 text-blue-500 hover:text-blue-400 transition-colors"
               >
-                <ExternalLink className="w-4 h-4" />
-                <span className="text-sm">View</span>
+                <Twitter className="w-3 h-3" />
+                <span className="text-xs">Tweet</span>
               </a>
             ) : (
-              <span className="text-muted-foreground text-sm">No URL</span>
+              <span className="text-muted-foreground text-xs">No Tweet</span>
             )}
           </div>
-        ),
-        size: 100,
-      })
-    ] : []),
-    columnHelper.accessor('original_tweet_url', {
-      header: 'Tweet',
-      cell: ({ row }) => (
-        <div className="w-full flex justify-center">
-          {row.original.original_tweet_url ? (
-            <a
-              href={row.original.original_tweet_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1 text-blue-500 hover:text-blue-400 transition-colors"
-            >
-              <Twitter className="w-4 h-4" />
-              <span className="text-sm">Tweet</span>
-            </a>
-          ) : (
-            <span className="text-muted-foreground text-sm">No Tweet</span>
-          )}
         </div>
       ),
-      size: 100,
+      size: 90,
     }),
     columnHelper.accessor('media_thumbnail', {
       header: 'Media',
@@ -204,7 +201,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
           )}
         </div>
       ),
-      size: 100,
+      size: 90,
     }),
     columnHelper.accessor('created_at', {
       header: ({ column }) => (
@@ -230,7 +227,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
             : 'N/A'}
         </div>
       ),
-      size: 140,
+      size: 120,
     }),
     columnHelper.accessor('favorite_count', {
       header: ({ column }) => (
@@ -256,31 +253,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
       ),
       size: 80,
     }),
-    columnHelper.accessor('category', {
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-auto p-0 font-semibold hover:bg-transparent justify-start w-full"
-        >
-          Category
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className="ml-2 h-4 w-4" />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className="ml-2 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          )}
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div className="w-full">
-          <span className="inline-block px-2 py-1 text-xs font-medium bg-secondary text-secondary-foreground rounded-full">
-            {row.original.category}
-          </span>
-        </div>
-      ),
-      size: 100,
+      size: 120,
     }),
   ], [showUrlColumn, seenProjects]);
 
@@ -315,7 +288,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
   }, [projects]);
 
   // Calculate total width
-  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 700;
+  const totalWidth = table.getHeaderGroups()[0]?.headers.reduce((acc, header) => acc + header.getSize(), 0) || 880;
 
   return (
     <div className="space-y-4">
@@ -356,9 +329,9 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
 
       {/* Table Container */}
       <div className="border rounded-lg bg-card overflow-hidden">
-        <div className="w-full">
+        <div className="w-full overflow-x-auto">
           {/* Fixed Header */}
-            <div className="sticky top-0 z-10 bg-muted/50 border-b">
+          <div className="sticky top-0 z-10 bg-muted/50 border-b" style={{ minWidth: `${totalWidth}px` }}>
             {table.getHeaderGroups().map((headerGroup) => (
                 <div key={headerGroup.id} className="grid" style={{ gridTemplateColumns: headerGroup.headers.map(h => `${h.getSize()}px`).join(' ') }}>
                 {headerGroup.headers.map((header) => (
@@ -379,6 +352,7 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
             <div 
             ref={parentRef}
             className="h-[600px] overflow-auto relative"
+            style={{ minWidth: `${totalWidth}px` }}
             >
             <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
                 {virtualizer.getVirtualItems().map((virtualRow) => {
