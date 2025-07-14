@@ -205,7 +205,9 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
       ),
       cell: ({ row }) => (
         <div className="text-sm w-full">
-          {formatDistanceToNow(new Date(row.original.created_at), { addSuffix: true })}
+          {row.original.created_at && !isNaN(new Date(row.original.created_at).getTime()) 
+            ? formatDistanceToNow(new Date(row.original.created_at), { addSuffix: true })
+            : 'N/A'}
         </div>
       ),
       size: 140,

@@ -4,7 +4,7 @@ import path from 'path';
 
 export interface TwitterProject {
   id: string;
-  created_at: string;
+  created_at: string | null;
   project_description: string;
   project_url: string | null;
   original_tweet_url: string | null;

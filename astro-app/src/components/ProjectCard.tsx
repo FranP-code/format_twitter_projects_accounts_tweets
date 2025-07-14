@@ -11,7 +11,9 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
-  const formattedDate = formatDistanceToNow(new Date(project.created_at), { addSuffix: true });
+  const formattedDate = project.created_at && !isNaN(new Date(project.created_at).getTime())
+    ? formatDistanceToNow(new Date(project.created_at), { addSuffix: true })
+    : 'N/A';
   const [seen, setSeen] = useState(false);
 
   useEffect(() => {
