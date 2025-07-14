@@ -228,6 +228,32 @@ export function ProjectsTable({ projects, title, showUrlColumn = true, onSeenSta
         </div>
       ),
       size: 120,
+    }),
+    columnHelper.accessor('category', {
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="h-auto p-0 font-semibold hover:bg-transparent justify-start w-full"
+        >
+          Category
+          {column.getIsSorted() === 'asc' ? (
+            <ArrowUp className="ml-2 h-4 w-4" />
+          ) : column.getIsSorted() === 'desc' ? (
+            <ArrowDown className="ml-2 h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          )}
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="w-full">
+          <span className="inline-block px-2 py-1 text-xs font-medium bg-secondary text-secondary-foreground rounded-full">
+            {row.original.category || 'Uncategorized'}
+          </span>
+        </div>
+      ),
+      size: 120,
     })
   ], [showUrlColumn, seenProjects]);
 

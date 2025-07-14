@@ -34,7 +34,8 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
   return (
     <div className={`bg-card rounded-lg border p-6 space-y-4 hover:shadow-lg transition-all ${seen ? 'opacity-75 bg-muted/50' : ''}`}>
       {/* Author Info */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
           {project.author_name.charAt(0).toUpperCase()}
         </div>
@@ -42,8 +43,27 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
           <p className="font-semibold text-foreground">{project.author_name}</p>
           <p className="text-sm text-muted-foreground">@{project.author_screen_name}</p>
         </div>
+        </div>
+        <div className="flex items-center space-x-2">
         <div className="ml-auto text-xs text-muted-foreground">
           {formattedDate}
+        </div>
+          {/* Seen Checkbox */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id={`seen-${project.id}`}
+              className="w-4 h-4 rounded border-border bg-background"
+              checked={seen}
+              onChange={toggleSeen}
+            />
+            <label 
+              htmlFor={`seen-${project.id}`}
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              Seen
+            </label>
+          </div>
         </div>
       </div>
 
@@ -97,22 +117,6 @@ export function ProjectCard({ project, onSeenStatusChange }: ProjectCardProps) {
         
         </div>
         
-        {/* Seen Checkbox */}
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id={`seen-${project.id}`}
-            className="w-4 h-4 rounded border-border bg-background"
-            checked={seen}
-            onChange={toggleSeen}
-          />
-          <label 
-            htmlFor={`seen-${project.id}`}
-            className="text-sm text-muted-foreground cursor-pointer"
-          >
-            Seen
-          </label>
-        </div>
       </div>
 
       {/* Engagement Stats */}

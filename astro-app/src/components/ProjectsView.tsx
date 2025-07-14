@@ -109,7 +109,7 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
         </div>
 
         {/* Content */}
-        <Tabs defaultValue="unseen-with-urls" className="space-y-6">
+        <Tabs defaultValue="with-urls" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="with-urls">
               Unseen w/ URLs ({unseenWithUrls.length})
@@ -125,7 +125,7 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="unseen-with-urls" className="space-y-6">
+          <TabsContent value="with-urls" className="space-y-6">
             {viewMode === 'table' ? (
               <ProjectsTable
                 projects={unseenWithUrls}
@@ -142,7 +142,7 @@ export function ProjectsView({ projects }: ProjectsViewProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="unseen-without-urls" className="space-y-6">
+          <TabsContent value="without-urls" className="space-y-6">
             {viewMode === 'table' ? (
               <ProjectsTable
                 projects={unseenWithoutUrls}
